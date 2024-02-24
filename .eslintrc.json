@@ -7,7 +7,6 @@
   ],
   "plugins": ["simple-import-sort"],
   "rules": {
-    "max-len": [2, 250],
     "no-multiple-empty-lines": [
       "error",
       {
