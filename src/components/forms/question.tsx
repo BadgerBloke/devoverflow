@@ -1,6 +1,6 @@
 "use client";
 
-import { KeyboardEvent, useRef } from "react";
+import { KeyboardEvent, useRef, useState } from "react";
 import Image from "next/image";
 import { ControllerRenderProps, useForm } from "react-hook-form";
 
@@ -18,12 +18,16 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { createQuestion } from "~/lib/actions/question.action";
 import { QuestionSchema, QuestionType } from "~/lib/validations";
 
 import { Badge } from "../ui/badge";
 
+const type: any = "create";
+
 const Question = () => {
   const editorRef = useRef(null);
+  const [isSubmitting, setSubmitting] = useState(false);
   const form = useForm<QuestionType>({
     resolver: zodResolver(QuestionSchema),
     defaultValues: {
@@ -76,7 +80,15 @@ const Question = () => {
     form.setValue("tags", newTags);
   };
 
-  const onSubmit = () => {};
+  const onSubmit = async (values: QuestionType) => {
+    setSubmitting(true);
+    try {
+      await createQuestion(values);
+    } catch (error) {
+    } finally {
+      setSubmitting(false);
+    }
+  };
   return (
     <Form {...form}>
       <form
@@ -123,7 +135,9 @@ const Question = () => {
                     // @ts-ignore
                     editorRef.current = editor;
                   }}
-                  initialValue="<p>This is the initial content of the editor.</p>"
+                  initialValue=""
+                  onBlur={field.onBlur}
+                  onEditorChange={(content) => field.onChange(content)}
                   init={{
                     height: 500,
                     menubar: false,
@@ -203,7 +217,19 @@ const Question = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button
+          className="primary-gradient w-fit !text-light-900"
+          disabled={isSubmitting}
+          type="submit"
+        >
+          {isSubmitting
+            ? type === "edit"
+              ? "Editing..."
+              : "Posting..."
+            : type === "edit"
+              ? "Edit Question"
+              : "Ask a Question"}
+        </Button>
       </form>
     </Form>
   );
