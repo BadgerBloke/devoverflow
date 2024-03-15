@@ -48,7 +48,7 @@ const Metric: FC<MetricProps> = ({
 
   if (isAuthor && href) {
     return (
-      <Link href={href}>
+      <Link href={href} className="flex-center flex-wrap gap-1">
         <MetricContent />
       </Link>
     );
