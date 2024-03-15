@@ -1,8 +1,10 @@
 "use client";
 
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Editor } from "@tinymce/tinymce-react";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -18,6 +20,7 @@ import { Input } from "~/components/ui/input";
 import { QuestionSchema, QuestionType } from "~/lib/validations";
 
 const Question = () => {
+  const editorRef = useRef(null);
   const form = useForm<QuestionType>({
     resolver: zodResolver(QuestionSchema),
     defaultValues: {
@@ -68,7 +71,40 @@ const Question = () => {
                 <span className="mt-3.5 text-primary-500">*</span>
               </FormLabel>
               <FormControl className="mt-3.5">
-                {/* TODO: Add an Editor component */}
+                <Editor
+                  apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
+                  onInit={(evt, editor) => {
+                    // @ts-ignore
+                    editorRef.current = editor;
+                  }}
+                  initialValue="<p>This is the initial content of the editor.</p>"
+                  init={{
+                    height: 500,
+                    menubar: false,
+                    plugins: [
+                      "advlist",
+                      "autolink",
+                      "lists",
+                      "link",
+                      "image",
+                      "charmap",
+                      "preview",
+                      "anchor",
+                      "searchreplace",
+                      "visualblocks",
+                      "codesample",
+                      "fullscreen",
+                      "insertdatetime",
+                      "media",
+                      "table",
+                    ],
+                    toolbar:
+                      "undo redo | " +
+                      "codesample | bold italic forecolor | alignleft aligncenter " +
+                      "alignright alignjustify | bullist numlist",
+                    content_style: "body { font-family:Inter; font-size:16px }",
+                  }}
+                />
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
                 Introduce the problem and expand on what you put in the title.
