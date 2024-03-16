@@ -2,7 +2,7 @@
 
 import { KeyboardEvent, useRef, useState } from "react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ControllerRenderProps, useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,6 +35,7 @@ const Question = ({ mongoUserId }: { mongoUserId: string }) => {
   const editorRef = useRef(null);
   const [isSubmitting, setSubmitting] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const form = useForm<QuestionType>({
     resolver: zodResolver(QuestionSchema),
     defaultValues: {
@@ -81,6 +82,7 @@ const Question = ({ mongoUserId }: { mongoUserId: string }) => {
     } catch (error) {
     } finally {
       setSubmitting(false);
+      router.push("/");
     }
   };
   return (
