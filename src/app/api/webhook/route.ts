@@ -11,6 +11,8 @@ const POST = async (req: Request) => {
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
   // It not possible to configure a custom domain in development environment on Clerk.
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
+  const WEBHOOK_SECRET_DEVELOPMENT =
+    process.env.WEBHOOK_SECRET_DEVELOPMENT || "";
 
   if (!WEBHOOK_SECRET) {
     throw new Error(
@@ -20,6 +22,7 @@ const POST = async (req: Request) => {
 
   // Get the headers
   const headerPayload = headers();
+  const environment = headerPayload.get("environment");
   const svixId = headerPayload.get("svix-id");
   const svixTimestamp = headerPayload.get("svix-timestamp");
   const svixSignature = headerPayload.get("svix-signature");
@@ -36,7 +39,9 @@ const POST = async (req: Request) => {
   const body = JSON.stringify(payload);
 
   // Create a new Svix instance with your secret.
-  const wh = new Webhook(WEBHOOK_SECRET);
+  const wh = new Webhook(
+    environment === "production" ? WEBHOOK_SECRET : WEBHOOK_SECRET_DEVELOPMENT
+  );
 
   let evt: WebhookEvent;
 
