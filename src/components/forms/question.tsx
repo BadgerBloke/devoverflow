@@ -2,6 +2,7 @@
 
 import { KeyboardEvent, useRef, useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { ControllerRenderProps, useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,28 +26,27 @@ import { Badge } from "../ui/badge";
 
 const type: any = "create";
 
-const Question = () => {
+type FieldType = ControllerRenderProps<
+  { title: string; content: string; tags: string[] },
+  "tags"
+>;
+
+const Question = ({ mongoUserId }: { mongoUserId: string }) => {
   const editorRef = useRef(null);
   const [isSubmitting, setSubmitting] = useState(false);
+  const pathname = usePathname();
   const form = useForm<QuestionType>({
     resolver: zodResolver(QuestionSchema),
     defaultValues: {
       title: "",
-      explanation: "",
+      content: "",
       tags: [],
     },
   });
 
   const handleInputKeyDown = (
     e: KeyboardEvent<HTMLInputElement>,
-    field: ControllerRenderProps<
-      {
-        title: string;
-        explanation: string;
-        tags: string[];
-      },
-      "tags"
-    >
+    field: FieldType
   ) => {
     console.log("Pressed Key: ", e.key);
     if (e.key.toLowerCase() === "enter" && field.name === "tags") {
@@ -65,17 +65,7 @@ const Question = () => {
     }
   };
 
-  const handleTagRemove = (
-    tag: string,
-    field: ControllerRenderProps<
-      {
-        title: string;
-        explanation: string;
-        tags: string[];
-      },
-      "tags"
-    >
-  ) => {
+  const handleTagRemove = (tag: string, field: FieldType) => {
     const newTags = field.value.filter((t) => t !== tag);
     form.setValue("tags", newTags);
   };
@@ -83,7 +73,11 @@ const Question = () => {
   const onSubmit = async (values: QuestionType) => {
     setSubmitting(true);
     try {
-      await createQuestion(values);
+      await createQuestion({
+        ...values,
+        author: JSON.parse(mongoUserId),
+        path: pathname,
+      });
     } catch (error) {
     } finally {
       setSubmitting(false);
@@ -121,7 +115,7 @@ const Question = () => {
         />
         <FormField
           control={form.control}
-          name="explanation"
+          name="content"
           render={({ field }) => (
             <FormItem className="flex w-full flex-col gap-3">
               <FormLabel className="paragraph-semibold text-dark400_light800">
@@ -168,7 +162,7 @@ const Question = () => {
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
                 Introduce the problem and expand on what you put in the title.
-                Minimum 20 characters.
+                Minimum 100 characters.
               </FormDescription>
               <FormMessage className="text-red-500" />
             </FormItem>
