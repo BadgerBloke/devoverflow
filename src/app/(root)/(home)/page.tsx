@@ -7,39 +7,42 @@ import NoResult from "~/components/shared/no-result";
 import LocalSearch from "~/components/shared/search/local-search";
 import { Button } from "~/components/ui/button";
 import { HomePageFilters } from "~/constants/filters";
+import { getQuestions } from "~/lib/actions/question.action";
 
 import HomeFilter from "./components/home-filter";
 
-const questions = [
-  {
-    _id: "1",
-    title: "Cascading Deletes in SQLAlchemy?",
-    tags: [
-      { _id: "1", name: "python" },
-      { _id: "2", name: "sql" },
-    ],
-    author: { _id: "1", name: "John Doe", picture: "url_to_picture" },
-    upvotes: 93489489834,
-    views: 100000000,
-    answers: [{}, {}], // Array of objects representing answers
-    createdAt: new Date("2024-02-23T12:00:00.000Z"),
-  },
-  {
-    _id: "2",
-    title: "How to center a div?",
-    tags: [
-      { _id: "1", name: "css" },
-      { _id: "2", name: "styling" },
-    ],
-    author: { _id: "2", name: "Jane Doe", picture: "url_to_picture" },
-    upvotes: 15,
-    views: 200,
-    answers: [{}, {}], // Array of objects representing answers
-    createdAt: new Date("2024-02-24T12:00:00.000Z"),
-  },
-];
+// const questions = [
+//   {
+//     _id: "1",
+//     title: "Cascading Deletes in SQLAlchemy?",
+//     tags: [
+//       { _id: "1", name: "python" },
+//       { _id: "2", name: "sql" },
+//     ],
+//     author: { _id: "1", name: "John Doe", picture: "url_to_picture" },
+//     upvotes: 93489489834,
+//     views: 100000000,
+//     answers: [{}, {}], // Array of objects representing answers
+//     createdAt: new Date("2024-02-23T12:00:00.000Z"),
+//   },
+//   {
+//     _id: "2",
+//     title: "How to center a div?",
+//     tags: [
+//       { _id: "1", name: "css" },
+//       { _id: "2", name: "styling" },
+//     ],
+//     author: { _id: "2", name: "Jane Doe", picture: "url_to_picture" },
+//     upvotes: 15,
+//     views: 200,
+//     answers: [{}, {}], // Array of objects representing answers
+//     createdAt: new Date("2024-02-24T12:00:00.000Z"),
+//   },
+// ];
 
-const Home = () => {
+const Home = async () => {
+  const { questions } = await getQuestions({});
+  console.log("questions: ", questions);
   return (
     <Fragment>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
@@ -74,7 +77,7 @@ const Home = () => {
               title={question.title}
               tags={question.tags}
               author={question.author}
-              upvotes={question.upvotes}
+              upVotes={question.upVotes}
               views={question.views}
               answers={question.answers}
               createdAt={question.createdAt}

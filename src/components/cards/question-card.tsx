@@ -10,7 +10,7 @@ interface QuestionCardProps {
   title: string;
   tags: Array<{ _id: string; name: string }>;
   author: { _id: string; name: string; picture: string };
-  upvotes: number;
+  upVotes: number[];
   views: number;
   answers: Array<object>;
   createdAt: Date;
@@ -21,7 +21,7 @@ const QuestionCard: FC<QuestionCardProps> = ({
   title,
   tags,
   author,
-  upvotes,
+  upVotes,
   views,
   answers,
   createdAt,
@@ -41,7 +41,7 @@ const QuestionCard: FC<QuestionCardProps> = ({
         </div>
       </div>
       <div className="mt-3.5 flex flex-wrap gap-2">
-        {tags.map((tag) => (
+        {tags?.map((tag) => (
           <RenderTag key={tag._id} _id={tag._id} name={tag.name} />
         ))}
       </div>
@@ -50,7 +50,7 @@ const QuestionCard: FC<QuestionCardProps> = ({
           imgUrl="/assets/icons/avatar.svg"
           alt="user"
           value={author.name}
-          title=" - asked 1 hour ago"
+          title={` - asked ${getTimestamp(createdAt)}`}
           href={`/profile/${author._id}`}
           isAuthor
           textStyles="body-medium text-dark400_light700"
@@ -58,7 +58,7 @@ const QuestionCard: FC<QuestionCardProps> = ({
         <Metric
           imgUrl="/assets/icons/like.svg"
           alt="Upvotes"
-          value={upvotes}
+          value={upVotes.length}
           title=" Votes"
           textStyles="small-medium text-dark400_light800"
         />
