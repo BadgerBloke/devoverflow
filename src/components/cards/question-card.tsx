@@ -5,7 +5,7 @@ import Metric from "~/components/shared/metric";
 import RenderTag from "~/components/shared/render-tag";
 import { getTimestamp } from "~/lib/utils";
 
-interface QuestionCardProps {
+export interface QuestionCardProps {
   _id: string;
   title: string;
   tags: Array<{ _id: string; name: string }>;
