@@ -7,9 +7,10 @@ import { getTimestamp } from "~/lib/utils";
 
 export interface QuestionCardProps {
   _id: string;
+  clerkId?: string | null;
   title: string;
   tags: Array<{ _id: string; name: string }>;
-  author: { _id: string; name: string; picture: string };
+  author: { _id: string; name: string; picture: string; clerkId: string };
   upVotes: number[];
   views: number;
   answers: Array<object>;
@@ -51,7 +52,7 @@ const QuestionCard: FC<QuestionCardProps> = ({
           alt="user"
           value={author.name}
           title={` - asked ${getTimestamp(createdAt)}`}
-          href={`/profile/${author._id}`}
+          href={`/profile/${author.clerkId}`}
           isAuthor
           textStyles="body-medium text-dark400_light700"
         />

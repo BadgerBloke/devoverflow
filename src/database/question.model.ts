@@ -12,7 +12,7 @@ export interface IQuestion extends Document {
   createdAt: Date;
 }
 
-const QuestionSchema = new Schema({
+const QuestionSchema = new Schema<IQuestion>({
   title: { type: String, required: true },
   content: { type: String, required: true },
   tags: [{ type: Schema.Types.ObjectId, ref: "Tag" }],
