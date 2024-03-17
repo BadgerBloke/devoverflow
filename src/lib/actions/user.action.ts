@@ -10,8 +10,23 @@ import { connectToDatabase } from "../mongoose";
 import {
   CreateUserParams,
   DeleteUserParams,
+  GetAllUsersParams,
   UpdateUserParams,
 } from "./shared.types";
+
+export const getAllUsers = async (params: GetAllUsersParams) => {
+  try {
+    connectToDatabase();
+
+    // const { page = 1, pageSize = 20, filter, searchQuery } = params;
+
+    const users = await User.find({}).sort({ createAt: -1 });
+    return { users };
+  } catch (error) {
+    console.log("Error: ", error);
+    throw error;
+  }
+};
 
 export const getUserById = async (params: { userId: string }) => {
   try {
