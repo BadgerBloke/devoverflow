@@ -3,7 +3,9 @@ import Link from "next/link";
 
 import { auth, SignedIn } from "@clerk/nextjs";
 
+import AnswerTab from "~/components/shared/answer-tab";
 import ProfileLink from "~/components/shared/profile-link";
+import QuestionTab from "~/components/shared/question-tab";
 import Stats from "~/components/shared/stats";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
@@ -76,7 +78,10 @@ const ProfileDetailsPage = async ({ params, searchParams }: Props) => {
           </SignedIn>
         </div>
       </div>
-      <Stats />
+      <Stats
+        totalQuestions={userInfo.totalQuestions}
+        totalAnswers={userInfo.totalAnswers}
+      />
       <div className="mt-10 flex gap-10">
         <Tabs defaultValue="top-posts" className="flex-1">
           <TabsList className="background-light800_dark400 min-h-10 p-1">
@@ -87,8 +92,12 @@ const ProfileDetailsPage = async ({ params, searchParams }: Props) => {
               Answers
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="top-posts">POSTS</TabsContent>
-          <TabsContent value="answers">ANSWERS</TabsContent>
+          <TabsContent value="top-posts">
+            <QuestionTab />
+          </TabsContent>
+          <TabsContent value="answers">
+            <AnswerTab />
+          </TabsContent>
         </Tabs>
       </div>
     </div>
