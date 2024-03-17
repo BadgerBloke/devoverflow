@@ -8,6 +8,7 @@ import {
   downVoteQuestion,
   upVoteQuestion,
 } from "~/lib/actions/question.action";
+import { toggleSaveQuestion } from "~/lib/actions/user.action";
 import { formatBigNumber } from "~/lib/utils";
 
 interface Props {
@@ -33,7 +34,14 @@ const Votes = ({
 }: Props) => {
   const pathname = usePathname();
   const router = useRouter();
-  const handleSave = async () => {};
+  const handleSave = async () => {
+    await toggleSaveQuestion({
+      questionId: JSON.parse(itemId),
+      userId: JSON.parse(userId),
+      path: pathname,
+    });
+  };
+
   const handleVote = async (action: "upVote" | "downVote") => {
     if (!userId) {
       router.push("/sign-in");
