@@ -13,3 +13,9 @@ export const QuestionSchema = z.object({
 });
 
 export type QuestionType = z.infer<typeof QuestionSchema>;
+
+export const AnswerSchema = z.object({
+  answer: z.string().min(100).max(5000),
+});
+
+export type AnswerType = z.infer<typeof AnswerSchema>;
