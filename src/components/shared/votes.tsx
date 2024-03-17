@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 
 import { downVoteAnswer, upVoteAnswer } from "~/lib/actions/answer.action";
+import { viewQuestion } from "~/lib/actions/interaction.action";
 import {
   downVoteQuestion,
   upVoteQuestion,
@@ -94,6 +96,13 @@ const Votes = ({
         break;
     }
   };
+
+  useEffect(() => {
+    viewQuestion({
+      questionId: JSON.parse(itemId),
+      userId: userId ? JSON.parse(userId) : undefined,
+    });
+  }, [itemId, userId, pathname, router]);
   return (
     <div className="flex gap-5">
       <div className="flex-center gap-2.5">
