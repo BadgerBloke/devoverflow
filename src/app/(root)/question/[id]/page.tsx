@@ -28,6 +28,7 @@ const QuestionDetailsPage = async ({
   }
 
   const result = await getQuestionById({ questionId: params.id });
+  console.log("result: ", mongoUser);
   return (
     <Fragment>
       <div className="flex-start w-full flex-col">
@@ -48,7 +49,16 @@ const QuestionDetailsPage = async ({
             </p>
           </Link>
           <div className="flex justify-end">
-            <Votes />
+            <Votes
+              type="question"
+              itemId={JSON.stringify(result._id)}
+              userId={JSON.stringify(mongoUser?._id)}
+              upVotes={result.upVotes.length}
+              hasUpVoted={result.upVotes.includes(mongoUser?._id)}
+              downVotes={result.downVotes.length}
+              hasDownVoted={result.downVotes.includes(mongoUser?._id)}
+              hasSaved={mongoUser?.saved.includes(result._id)}
+            />
           </div>
         </div>
         <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full text-left">
@@ -94,14 +104,14 @@ const QuestionDetailsPage = async ({
 
       <AllAnswers
         questionId={JSON.stringify(result._id)}
-        userId={JSON.stringify(mongoUser._id)}
+        userId={JSON.stringify(mongoUser?._id)}
         totalAnswers={result.answers.length}
       />
 
       <AnswerForm
         question={result.content}
         questionId={JSON.stringify(result._id)}
-        authorId={JSON.stringify(mongoUser._id)}
+        authorId={JSON.stringify(mongoUser?._id)}
       />
     </Fragment>
   );

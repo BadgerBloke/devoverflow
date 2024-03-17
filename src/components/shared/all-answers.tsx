@@ -7,7 +7,7 @@ import { getTimestamp } from "~/lib/utils";
 
 import Filter from "./filter";
 import ParseHTML from "./parse-html";
-import Votes from "./votes";
+// import Votes from "./votes";
 
 interface Props {
   questionId: string;
@@ -61,9 +61,7 @@ const AllAnswers = async ({
                     </p>
                   </div>
                 </Link>
-                <div className="flex justify-end">
-                  <Votes />
-                </div>
+                <div className="flex justify-end">{/* <Votes /> */}</div>
               </div>
             </div>
             <ParseHTML data={answer.content} />
