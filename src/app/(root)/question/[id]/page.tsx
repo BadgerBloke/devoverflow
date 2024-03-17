@@ -2,12 +2,20 @@ import { Fragment } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import AnswerForm from "~/components/forms/answer";
 import Metric from "~/components/shared/metric";
 import ParseHTML from "~/components/shared/parse-html";
+import RenderTag from "~/components/shared/render-tag";
 import { getQuestionById } from "~/lib/actions/question.action";
 import { getTimestamp } from "~/lib/utils";
 
-const QuestionDetailsPage = async ({ params, searchParams }) => {
+const QuestionDetailsPage = async ({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { [key: string]: string };
+}) => {
   const result = await getQuestionById({ questionId: params.id });
   console.log("SearchParams: ", searchParams, params);
   return (
@@ -58,7 +66,21 @@ const QuestionDetailsPage = async ({ params, searchParams }) => {
           textStyles="small-medium text-dark400_light800"
         />
       </div>
+
       <ParseHTML data={result.content} />
+
+      <div className="mt-8 flex flex-wrap gap-2">
+        {result.tags?.map((tag: { _id: string; name: string }) => (
+          <RenderTag
+            key={tag._id}
+            _id={tag._id}
+            name={tag.name}
+            showCount={false}
+          />
+        ))}
+      </div>
+
+      <AnswerForm />
     </Fragment>
   );
 };
