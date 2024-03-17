@@ -2,11 +2,14 @@ import { Fragment } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { auth } from "@clerk/nextjs";
+
 import AnswerForm from "~/components/forms/answer";
 import Metric from "~/components/shared/metric";
 import ParseHTML from "~/components/shared/parse-html";
 import RenderTag from "~/components/shared/render-tag";
 import { getQuestionById } from "~/lib/actions/question.action";
+import { getUserById } from "~/lib/actions/user.action";
 import { getTimestamp } from "~/lib/utils";
 
 const QuestionDetailsPage = async ({
@@ -16,6 +19,12 @@ const QuestionDetailsPage = async ({
   params: { id: string };
   searchParams: { [key: string]: string };
 }) => {
+  const { userId: clerkId } = auth();
+  let mongoUser;
+  if (clerkId) {
+    mongoUser = await getUserById({ userId: clerkId });
+  }
+
   const result = await getQuestionById({ questionId: params.id });
   console.log("SearchParams: ", searchParams, params);
   return (
@@ -80,7 +89,11 @@ const QuestionDetailsPage = async ({
         ))}
       </div>
 
-      <AnswerForm />
+      <AnswerForm
+        question={result.content}
+        questionId={JSON.stringify(result._id)}
+        authorId={JSON.stringify(mongoUser._id)}
+      />
     </Fragment>
   );
 };

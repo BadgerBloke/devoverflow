@@ -1,12 +1,14 @@
 "use client";
 import { useRef, useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Editor } from "@tinymce/tinymce-react";
 
 import { useTheme } from "~/context/theme-provider";
+import { createAnswer } from "~/lib/actions/answer.action";
 import { AnswerSchema, AnswerType } from "~/lib/validations";
 
 import { Button } from "../ui/button";
@@ -18,9 +20,16 @@ import {
   FormMessage,
 } from "../ui/form";
 
-const AnswerForm = () => {
+interface Props {
+  question: string;
+  questionId: string;
+  authorId: string;
+}
+
+const AnswerForm = ({ question, questionId, authorId }: Props) => {
   const editorRef = useRef(null);
   const { mode } = useTheme();
+  const pathname = usePathname();
   const [isSubmitting, setSubmitting] = useState(false);
   const form = useForm<AnswerType>({
     resolver: zodResolver(AnswerSchema),
@@ -29,8 +38,26 @@ const AnswerForm = () => {
     },
   });
 
-  const onSubmit = (values: AnswerType) => {
-    //
+  const onSubmit = async (values: AnswerType) => {
+    setSubmitting(true);
+    try {
+      await createAnswer({
+        content: values.answer,
+        author: JSON.parse(authorId),
+        question: JSON.parse(questionId),
+        path: pathname,
+      });
+      form.reset();
+
+      if (editorRef.current) {
+        const editor = editorRef.current as any;
+        editor.setContent("");
+      }
+    } catch (error) {
+      console.log("error: ", error);
+    } finally {
+      setSubmitting(false);
+    }
   };
   return (
     <div>

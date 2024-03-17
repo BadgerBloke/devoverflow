@@ -14,14 +14,14 @@ export const createAnswer = async (params: CreateAnswerParams) => {
     connectToDatabase();
 
     const { content, path, author, question } = params;
-    const newAnswer = new Answer({ content, author, question });
+    const newAnswer = await Answer.create({ content, author, question });
 
     await Question.findByIdAndUpdate(question, {
-      $push: { answer: newAnswer._id },
+      $push: { answers: newAnswer._id },
     });
 
     // TODO: add interaction....
-
+    console.log("newAnswer: ", newAnswer);
     revalidatePath(path);
   } catch (error) {
     console.log("Error: ", error);
