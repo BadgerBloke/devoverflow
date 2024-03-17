@@ -34,10 +34,10 @@ const MobileNav = () => {
             src="/assets/images/site-logo.svg"
             width={23}
             height={23}
-            alt="CivilOverflow"
+            alt="QuestionOverflow"
           />
           <p className="h2-bold text-dark100_light900 font-spaceGrotesk">
-            Civil<span className="text-primary-500">Overflow</span>
+            Question<span className="text-primary-500">Overflow</span>
           </p>
         </Link>
         <div>
