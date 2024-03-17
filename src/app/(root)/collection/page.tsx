@@ -2,7 +2,9 @@ import { Fragment } from "react";
 
 import { auth } from "@clerk/nextjs";
 
-import QuestionCard from "~/components/cards/question-card";
+import QuestionCard, {
+  QuestionCardProps,
+} from "~/components/cards/question-card";
 import Filter from "~/components/shared/filter";
 import NoResult from "~/components/shared/no-result";
 import LocalSearch from "~/components/shared/search/local-search";
@@ -34,7 +36,7 @@ const Home = async () => {
       </div>
       <div className="mt-10 flex w-full flex-col gap-6">
         {questions.length > 0 ? (
-          questions.map((question) => (
+          questions.map((question: QuestionCardProps) => (
             <QuestionCard
               key={question._id}
               _id={question._id}
