@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { FilterQuery } from "mongoose";
 
-import Question from "~/database/question.model";
+import Question, { IQuestion } from "~/database/question.model";
 import Tag from "~/database/tag.model";
 import User from "~/database/user.model";
 
@@ -143,7 +143,7 @@ export const getSavedQuestions = async (params: GetSavedQuestionsParams) => {
       searchQuery,
     } = params;
 
-    const query: FilterQuery<typeof Question> = searchQuery
+    const query: FilterQuery<IQuestion> = searchQuery
       ? { title: { $regex: new RegExp(searchQuery, "i") } }
       : {};
     const user = await User.findOne({ clerkId }).populate({
