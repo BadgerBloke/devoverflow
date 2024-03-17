@@ -93,10 +93,18 @@ const ProfileDetailsPage = async ({ params, searchParams }: Props) => {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="top-posts">
-            <QuestionTab />
+            <QuestionTab
+              userId={userInfo.user._id}
+              clerkId={clerkId}
+              searchParams={searchParams}
+            />
           </TabsContent>
           <TabsContent value="answers">
-            <AnswerTab />
+            <AnswerTab
+              userId={userInfo.user._id}
+              clerkId={clerkId}
+              searchParams={searchParams}
+            />
           </TabsContent>
         </Tabs>
       </div>
