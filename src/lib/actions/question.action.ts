@@ -12,6 +12,7 @@ import {
   CreateQuestionParams,
   GetQuestionByIdParams,
   GetQuestionsParams,
+  QuestionVoteParams,
 } from "./shared.types";
 
 export const createQuestion = async (params: CreateQuestionParams) => {
@@ -72,6 +73,70 @@ export const getQuestionById = async (params: GetQuestionByIdParams) => {
         select: "_id clerkId name picture",
       });
     return question;
+  } catch (error) {
+    console.log("Error: ", error);
+    throw error;
+  }
+};
+
+export const upVoteQuestion = async (params: QuestionVoteParams) => {
+  try {
+    connectToDatabase();
+
+    const { questionId, userId, hasDownVoted, hasUpVoted, path } = params;
+
+    let updateQuery = {};
+    if (hasUpVoted) {
+      updateQuery = { $pull: { upVotes: userId } };
+    } else if (hasDownVoted) {
+      updateQuery = {
+        $pull: { downVotes: userId },
+        $push: { upVotes: userId },
+      };
+    } else {
+      updateQuery = { $addToSet: { upVotes: userId } };
+    }
+
+    const question = await Question.findByIdAndUpdate(questionId, updateQuery, {
+      new: true,
+    });
+
+    if (!question) throw new Error("Question not found");
+
+    // Increment author's reputation
+    revalidatePath(path);
+  } catch (error) {
+    console.log("Error: ", error);
+    throw error;
+  }
+};
+
+export const downVoteQuestion = async (params: QuestionVoteParams) => {
+  try {
+    connectToDatabase();
+
+    const { questionId, userId, hasDownVoted, hasUpVoted, path } = params;
+
+    let updateQuery = {};
+    if (hasDownVoted) {
+      updateQuery = { $pull: { downVotes: userId } };
+    } else if (hasUpVoted) {
+      updateQuery = {
+        $pull: { upVotes: userId },
+        $push: { downVotes: userId },
+      };
+    } else {
+      updateQuery = { $addToSet: { downVotes: userId } };
+    }
+
+    const question = await Question.findByIdAndUpdate(questionId, updateQuery, {
+      new: true,
+    });
+
+    if (!question) throw new Error("Question not found");
+
+    // Increment author's reputation
+    revalidatePath(path);
   } catch (error) {
     console.log("Error: ", error);
     throw error;

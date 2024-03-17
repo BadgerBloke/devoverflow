@@ -28,7 +28,6 @@ const QuestionDetailsPage = async ({
   }
 
   const result = await getQuestionById({ questionId: params.id });
-  console.log("result: ", mongoUser);
   return (
     <Fragment>
       <div className="flex-start w-full flex-col">
