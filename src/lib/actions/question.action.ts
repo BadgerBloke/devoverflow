@@ -27,19 +27,19 @@ export const createQuestion = async (params: CreateQuestionParams) => {
     });
 
     // Create the tags or get them if they already exist
+    const tagDocuments = [];
     for (const tag of tags) {
       const existingTag = await Tag.findOneAndUpdate(
         { name: { $regex: new RegExp(`^${tag}$`, "i") } },
         { $setOnInsert: { name: tag }, $push: { questions: question._id } },
         { upsert: true, new: true }
       );
-
-      await Question.findByIdAndUpdate(question._id, {
-        $addToSet: {
-          tags: existingTag._id,
-        },
-      });
+      tagDocuments.push(existingTag._id);
     }
+
+    await Question.findByIdAndUpdate(question._id, {
+      $push: { tags: { $each: tagDocuments } },
+    });
 
     revalidatePath(path);
   } catch (error) {
