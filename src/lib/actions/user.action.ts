@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { FilterQuery } from "mongoose";
 
+import Answer from "~/database/answer.model";
 import Question, { IQuestion } from "~/database/question.model";
 import Tag from "~/database/tag.model";
 import User from "~/database/user.model";
@@ -14,6 +15,7 @@ import {
   DeleteUserParams,
   GetAllUsersParams,
   GetSavedQuestionsParams,
+  GetUserByIdParams,
   ToggleSaveQuestionParams,
   UpdateUserParams,
 } from "./shared.types";
@@ -161,6 +163,25 @@ export const getSavedQuestions = async (params: GetSavedQuestionsParams) => {
     if (!user) throw new Error("User not found");
 
     return { questions: user.saved };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getUserInfo = async (params: GetUserByIdParams) => {
+  try {
+    connectToDatabase();
+
+    const { userId } = params;
+    const user = await User.findOne({ clerkId: userId });
+
+    if (!user) throw new Error("User not found");
+
+    const totalQuestions = await Question.countDocuments({ author: user._id });
+    const totalAnswers = await Answer.countDocuments({ author: user._id });
+
+    return { user, totalQuestions, totalAnswers };
   } catch (error) {
     console.log(error);
     throw error;
