@@ -42,7 +42,7 @@ import HomeFilter from "./components/home-filter";
 
 const Home = async () => {
   const { questions } = await getQuestions({});
-  console.log("questions: ", questions);
+  // console.log("questions: ", questions);
   return (
     <Fragment>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">

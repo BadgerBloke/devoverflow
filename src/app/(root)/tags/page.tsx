@@ -4,7 +4,7 @@ import Link from "next/link";
 import Filter from "~/components/shared/filter";
 import NoResult from "~/components/shared/no-result";
 import LocalSearch from "~/components/shared/search/local-search";
-import { UserFilters } from "~/constants/filters";
+import { TagFilters } from "~/constants/filters";
 import { getAllTags } from "~/lib/actions/tag.actions";
 
 const TagsPage = async () => {
@@ -21,7 +21,7 @@ const TagsPage = async () => {
           placeholder="Search for tags"
           otherClasses="flex-1"
         />
-        <Filter filters={UserFilters} otherClasses="min-h-14 sm:min-w-44" />
+        <Filter filters={TagFilters} otherClasses="min-h-14 sm:min-w-44" />
       </div>
       <section className="mt-12 flex flex-wrap gap-4">
         {result.tags.length > 0 ? (
