@@ -9,6 +9,7 @@ import AllAnswers from "~/components/shared/all-answers";
 import Metric from "~/components/shared/metric";
 import ParseHTML from "~/components/shared/parse-html";
 import RenderTag from "~/components/shared/render-tag";
+import Votes from "~/components/shared/votes";
 import { getQuestionById } from "~/lib/actions/question.action";
 import { getUserById } from "~/lib/actions/user.action";
 import { getTimestamp } from "~/lib/utils";
@@ -46,7 +47,9 @@ const QuestionDetailsPage = async ({
               {result.author.name}
             </p>
           </Link>
-          <div className="flex justify-end">VOTING</div>
+          <div className="flex justify-end">
+            <Votes />
+          </div>
         </div>
         <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full text-left">
           {result.title}
