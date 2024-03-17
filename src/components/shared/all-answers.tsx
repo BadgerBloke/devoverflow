@@ -7,7 +7,7 @@ import { getTimestamp } from "~/lib/utils";
 
 import Filter from "./filter";
 import ParseHTML from "./parse-html";
-// import Votes from "./votes";
+import Votes from "./votes";
 
 interface Props {
   questionId: string;
@@ -35,11 +35,11 @@ const AllAnswers = async ({
         </h3>
         <Filter filters={AnswerFilters} />
       </div>
-      <div>
+      <div className="my-10">
         {result.answers.map((answer) => (
           <article key={answer._id}>
             <div className="flex items-center justify-between">
-              <div className="mb-8 flex flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
+              <div className="mb-8 flex w-full flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
                 <Link
                   href={`/profile/${answer.author.clerkId}`}
                   className="flex flex-1 items-start gap-1 sm:items-center"
@@ -61,7 +61,17 @@ const AllAnswers = async ({
                     </p>
                   </div>
                 </Link>
-                <div className="flex justify-end">{/* <Votes /> */}</div>
+                <div className="flex justify-end">
+                  <Votes
+                    type="answer"
+                    itemId={JSON.stringify(answer._id)}
+                    userId={userId}
+                    upVotes={answer.upVotes.length}
+                    hasUpVoted={answer.upVotes.includes(JSON.parse(userId))}
+                    downVotes={answer.downVotes.length}
+                    hasDownVoted={answer.downVotes.includes(JSON.parse(userId))}
+                  />
+                </div>
               </div>
             </div>
             <ParseHTML data={answer.content} />
