@@ -5,6 +5,7 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs";
 
 import AnswerForm from "~/components/forms/answer";
+import AllAnswers from "~/components/shared/all-answers";
 import Metric from "~/components/shared/metric";
 import ParseHTML from "~/components/shared/parse-html";
 import RenderTag from "~/components/shared/render-tag";
@@ -26,7 +27,6 @@ const QuestionDetailsPage = async ({
   }
 
   const result = await getQuestionById({ questionId: params.id });
-  console.log("SearchParams: ", searchParams, params);
   return (
     <Fragment>
       <div className="flex-start w-full flex-col">
@@ -88,6 +88,12 @@ const QuestionDetailsPage = async ({
           />
         ))}
       </div>
+
+      <AllAnswers
+        questionId={JSON.stringify(result._id)}
+        userId={JSON.stringify(mongoUser._id)}
+        totalAnswers={result.answers.length}
+      />
 
       <AnswerForm
         question={result.content}
