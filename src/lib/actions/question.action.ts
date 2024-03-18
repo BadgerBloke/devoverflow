@@ -189,3 +189,17 @@ export const editQuestion = async (params: EditQuestionParams) => {
     throw error;
   }
 };
+
+export const getHotQuestions = async () => {
+  try {
+    connectToDatabase();
+
+    const hotQuestions = await Question.find({})
+      .sort({ views: -1, upVotes: -1 })
+      .limit(5);
+    return hotQuestions;
+  } catch (error) {
+    console.log("Error: ", error);
+    throw error;
+  }
+};
