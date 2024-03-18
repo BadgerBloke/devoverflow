@@ -20,6 +20,7 @@ const Home = async ({ searchParams }: URLProps) => {
   const { questions } = await getSavedQuestions({
     clerkId: userId,
     searchQuery: searchParams.q,
+    filter: searchParams.filter,
   });
   return (
     <Fragment>
@@ -32,11 +33,7 @@ const Home = async ({ searchParams }: URLProps) => {
           placeholder="Search for saved questions"
           otherClasses="flex-1"
         />
-        <Filter
-          filters={QuestionFilters}
-          otherClasses="min-h-14 sm:min-w-44"
-          containerClasses="hidden max-md:flex"
-        />
+        <Filter filters={QuestionFilters} otherClasses="min-h-14 sm:min-w-44" />
       </div>
       <div className="mt-10 flex w-full flex-col gap-6">
         {questions.length > 0 ? (
