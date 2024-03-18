@@ -9,7 +9,10 @@ import { getAllUsers } from "~/lib/actions/user.action";
 import { URLProps } from "~/types";
 
 const CommunityPage = async ({ searchParams }: URLProps) => {
-  const result = await getAllUsers({ searchQuery: searchParams.q });
+  const result = await getAllUsers({
+    searchQuery: searchParams.q,
+    filter: searchParams.filter,
+  });
   return (
     <Fragment>
       <h1 className="h1-bold text-dark100_light900">All Users</h1>
