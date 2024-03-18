@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 
+import Answer from "~/database/answer.model";
+import Interaction from "~/database/interaction.model";
 import Question from "~/database/question.model";
 import Tag from "~/database/tag.model";
 import User from "~/database/user.model";
@@ -10,6 +12,7 @@ import { connectToDatabase } from "../mongoose";
 
 import {
   CreateQuestionParams,
+  DeleteQuestionParams,
   GetQuestionByIdParams,
   GetQuestionsParams,
   QuestionVoteParams,
@@ -136,6 +139,27 @@ export const downVoteQuestion = async (params: QuestionVoteParams) => {
     if (!question) throw new Error("Question not found");
 
     // Increment author's reputation
+    revalidatePath(path);
+  } catch (error) {
+    console.log("Error: ", error);
+    throw error;
+  }
+};
+
+export const deleteQuestion = async (params: DeleteQuestionParams) => {
+  try {
+    connectToDatabase();
+
+    const { questionId, path } = params;
+
+    await Question.deleteOne({ _id: questionId });
+    await Answer.deleteMany({ question: questionId });
+    await Interaction.deleteMany({ question: questionId });
+    await Tag.updateMany(
+      { questions: questionId },
+      { $pull: { questions: questionId } }
+    );
+
     revalidatePath(path);
   } catch (error) {
     console.log("Error: ", error);
