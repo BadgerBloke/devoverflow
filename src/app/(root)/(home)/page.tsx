@@ -13,7 +13,10 @@ import { URLProps } from "~/types";
 import HomeFilter from "./components/home-filter";
 
 const Home = async ({ searchParams }: URLProps) => {
-  const { questions } = await getQuestions({ searchQuery: searchParams.q });
+  const { questions } = await getQuestions({
+    searchQuery: searchParams.q,
+    filter: searchParams.filter,
+  });
   return (
     <Fragment>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
