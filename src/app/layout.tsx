@@ -6,9 +6,9 @@ import type { Metadata } from "next";
 // eslint-disable-next-line camelcase
 import { Inter, Space_Grotesk } from "next/font/google";
 
-import { ClerkProvider } from "@clerk/nextjs";
-
 import ThemeProvider from "~/context/theme-provider";
+
+import ClerkProvider from "./clerk-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,16 +39,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${spaceGrotesk.variable}`}>
-        <ClerkProvider
-          appearance={{
-            elements: {
-              formButtonPrimary: "primary-gradient",
-              footerActionLink: "primary-text-gradient hover:text-primary-500",
-            },
-          }}
-        >
-          <ThemeProvider>{children}</ThemeProvider>
-        </ClerkProvider>
+        <ThemeProvider>
+          <ClerkProvider>{children}</ClerkProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
