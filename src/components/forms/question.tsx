@@ -20,30 +20,39 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { useTheme } from "~/context/theme-provider";
-import { createQuestion } from "~/lib/actions/question.action";
+import { createQuestion, editQuestion } from "~/lib/actions/question.action";
 import { QuestionSchema, QuestionType } from "~/lib/validations";
 
 import { Badge } from "../ui/badge";
-
-const type: any = "create";
 
 type FieldType = ControllerRenderProps<
   { title: string; content: string; tags: string[] },
   "tags"
 >;
 
-const Question = ({ mongoUserId }: { mongoUserId: string }) => {
+interface Props {
+  type?: "create" | "edit";
+  mongoUserId: string;
+  questionDetails?: string;
+}
+
+const Question = ({ type = "create", mongoUserId, questionDetails }: Props) => {
   const editorRef = useRef(null);
   const { mode } = useTheme();
   const [isSubmitting, setSubmitting] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const parsedQuestionDetails = JSON.parse(questionDetails || "{}");
+  const groupedTags = parsedQuestionDetails.tags.map(
+    (tag: { name: string }) => tag.name
+  );
+
   const form = useForm<QuestionType>({
     resolver: zodResolver(QuestionSchema),
     defaultValues: {
-      title: "",
-      content: "",
-      tags: [],
+      title: parsedQuestionDetails.title || "",
+      content: parsedQuestionDetails.content || "",
+      tags: groupedTags || [],
     },
   });
 
@@ -69,22 +78,34 @@ const Question = ({ mongoUserId }: { mongoUserId: string }) => {
   };
 
   const handleTagRemove = (tag: string, field: FieldType) => {
-    const newTags = field.value.filter((t) => t !== tag);
-    form.setValue("tags", newTags);
+    if (type !== "edit") {
+      const newTags = field.value.filter((t) => t !== tag);
+      form.setValue("tags", newTags);
+    }
   };
 
   const onSubmit = async (values: QuestionType) => {
     setSubmitting(true);
     try {
-      await createQuestion({
-        ...values,
-        author: JSON.parse(mongoUserId),
-        path: pathname,
-      });
+      if (type === "edit") {
+        await editQuestion({
+          questionId: parsedQuestionDetails._id,
+          title: values.title,
+          content: values.content,
+          path: pathname,
+        });
+        router.push(`/question/${parsedQuestionDetails._id}`);
+      } else {
+        await createQuestion({
+          ...values,
+          author: JSON.parse(mongoUserId),
+          path: pathname,
+        });
+        router.push("/");
+      }
     } catch (error) {
     } finally {
       setSubmitting(false);
-      router.push("/");
     }
   };
   return (
@@ -133,7 +154,7 @@ const Question = ({ mongoUserId }: { mongoUserId: string }) => {
                     // @ts-ignore
                     editorRef.current = editor;
                   }}
-                  initialValue=""
+                  initialValue={parsedQuestionDetails.content || ""}
                   onBlur={field.onBlur}
                   onEditorChange={(content) => field.onChange(content)}
                   init={{
@@ -184,6 +205,7 @@ const Question = ({ mongoUserId }: { mongoUserId: string }) => {
               </FormLabel>
               <FormControl className="mt-3.5">
                 <Input
+                  disabled={type === "edit"}
                   placeholder="Add tags..."
                   className="no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-14 border"
                   onKeyDown={(e) => handleInputKeyDown(e, field)}
@@ -198,13 +220,15 @@ const Question = ({ mongoUserId }: { mongoUserId: string }) => {
                       onClick={() => handleTagRemove(tag, field)}
                     >
                       {tag}
-                      <Image
-                        src="/assets/icons/close.svg"
-                        alt="Close icon"
-                        width={12}
-                        height={12}
-                        className="cursor-pointer object-contain invert-0 dark:invert"
-                      />
+                      {type !== "edit" && (
+                        <Image
+                          src="/assets/icons/close.svg"
+                          alt="Close icon"
+                          width={12}
+                          height={12}
+                          className="cursor-pointer object-contain invert-0 dark:invert"
+                        />
+                      )}
                     </Badge>
                   ))}
                 </div>
