@@ -39,7 +39,7 @@ const AllAnswers = async ({
         </h3>
         <Filter filters={AnswerFilters} />
       </div>
-      <div className="my-10">
+      <div className="my-10 space-y-16">
         {result.answers.map((answer) => (
           <article key={answer._id}>
             <div className="flex items-center justify-between">
