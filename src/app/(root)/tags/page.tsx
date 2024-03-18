@@ -9,7 +9,10 @@ import { getAllTags } from "~/lib/actions/tag.actions";
 import { URLProps } from "~/types";
 
 const TagsPage = async ({ searchParams }: URLProps) => {
-  const result = await getAllTags({ searchQuery: searchParams.q });
+  const result = await getAllTags({
+    searchQuery: searchParams.q,
+    filter: searchParams.filter,
+  });
   return (
     <Fragment>
       <h1 className="h1-bold text-dark100_light900">All Tags</h1>
