@@ -1,10 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { FilterQuery } from "mongoose";
 
 import Answer from "~/database/answer.model";
 import Interaction from "~/database/interaction.model";
-import Question from "~/database/question.model";
+import Question, { IQuestion } from "~/database/question.model";
 import Tag from "~/database/tag.model";
 import User from "~/database/user.model";
 
@@ -55,7 +56,20 @@ export const createQuestion = async (params: CreateQuestionParams) => {
 export const getQuestions = async (params: GetQuestionsParams) => {
   try {
     connectToDatabase();
-    const questions = await Question.find({}, {}, { sort: { createdAt: -1 } })
+
+    const { searchQuery } = params;
+    const query: FilterQuery<IQuestion> = {};
+    if (searchQuery) {
+      query.$or = [
+        { title: { $regex: new RegExp(searchQuery, "i") } },
+        { content: { $regex: new RegExp(searchQuery, "i") } },
+      ];
+    }
+    const questions = await Question.find(
+      query,
+      {},
+      { sort: { createdAt: -1 } }
+    )
       .populate({ path: "author", model: User })
       .populate({ path: "tags" });
     return { questions };

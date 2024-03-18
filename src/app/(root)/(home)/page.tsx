@@ -8,12 +8,12 @@ import LocalSearch from "~/components/shared/search/local-search";
 import { Button } from "~/components/ui/button";
 import { HomePageFilters } from "~/constants/filters";
 import { getQuestions } from "~/lib/actions/question.action";
+import { URLProps } from "~/types";
 
 import HomeFilter from "./components/home-filter";
 
-const Home = async () => {
-  const { questions } = await getQuestions({});
-  // console.log("questions: ", questions);
+const Home = async ({ searchParams }: URLProps) => {
+  const { questions } = await getQuestions({ searchQuery: searchParams.q });
   return (
     <Fragment>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
