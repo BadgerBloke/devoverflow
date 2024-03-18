@@ -6,7 +6,7 @@ import { FilterQuery } from "mongoose";
 import Answer from "~/database/answer.model";
 import Question, { IQuestion } from "~/database/question.model";
 import Tag from "~/database/tag.model";
-import User from "~/database/user.model";
+import User, { IUser } from "~/database/user.model";
 
 import { connectToDatabase } from "../mongoose";
 
@@ -25,9 +25,20 @@ export const getAllUsers = async (params: GetAllUsersParams) => {
   try {
     connectToDatabase();
 
-    // const { page = 1, pageSize = 20, filter, searchQuery } = params;
+    const {
+      //  page = 1, pageSize = 20, filter,
+      searchQuery,
+    } = params;
 
-    const users = await User.find({}).sort({ createAt: -1 });
+    const query: FilterQuery<IUser> = {};
+
+    if (searchQuery) {
+      query.$or = [
+        { name: { $regex: new RegExp(searchQuery, "i") } },
+        { username: { $regex: new RegExp(searchQuery, "i") } },
+      ];
+    }
+    const users = await User.find(query).sort({ createAt: -1 });
     return { users };
   } catch (error) {
     console.log("Error: ", error);
@@ -146,9 +157,15 @@ export const getSavedQuestions = async (params: GetSavedQuestionsParams) => {
       searchQuery,
     } = params;
 
-    const query: FilterQuery<IQuestion> = searchQuery
-      ? { title: { $regex: new RegExp(searchQuery, "i") } }
-      : {};
+    const query: FilterQuery<IQuestion> = {};
+
+    if (searchQuery) {
+      query.$or = [
+        { title: { $regex: new RegExp(searchQuery, "i") } },
+        { content: { $regex: new RegExp(searchQuery, "i") } },
+      ];
+    }
+
     const user = await User.findOne({ clerkId }).populate({
       path: "saved",
       match: query,

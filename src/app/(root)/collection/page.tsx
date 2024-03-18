@@ -10,22 +10,26 @@ import NoResult from "~/components/shared/no-result";
 import LocalSearch from "~/components/shared/search/local-search";
 import { QuestionFilters } from "~/constants/filters";
 import { getSavedQuestions } from "~/lib/actions/user.action";
+import { URLProps } from "~/types";
 
-const Home = async () => {
+const Home = async ({ searchParams }: URLProps) => {
   const { userId } = auth();
 
   if (!userId) return null;
 
-  const { questions } = await getSavedQuestions({ clerkId: userId });
+  const { questions } = await getSavedQuestions({
+    clerkId: userId,
+    searchQuery: searchParams.q,
+  });
   return (
     <Fragment>
       <h1 className="h1-bold text-dark100_light900">Saved Questions</h1>
       <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
         <LocalSearch
-          route="/"
+          route="/collection"
           iconPosition="left"
           imgSrc="/assets/icons/search.svg"
-          placeholder="Search for questions"
+          placeholder="Search for saved questions"
           otherClasses="flex-1"
         />
         <Filter

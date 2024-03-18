@@ -6,9 +6,10 @@ import Filter from "~/components/shared/filter";
 import LocalSearch from "~/components/shared/search/local-search";
 import { UserFilters } from "~/constants/filters";
 import { getAllUsers } from "~/lib/actions/user.action";
+import { URLProps } from "~/types";
 
-const CommunityPage = async () => {
-  const result = await getAllUsers({});
+const CommunityPage = async ({ searchParams }: URLProps) => {
+  const result = await getAllUsers({ searchQuery: searchParams.q });
   return (
     <Fragment>
       <h1 className="h1-bold text-dark100_light900">All Users</h1>
