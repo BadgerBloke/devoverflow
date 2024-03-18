@@ -6,9 +6,10 @@ import NoResult from "~/components/shared/no-result";
 import LocalSearch from "~/components/shared/search/local-search";
 import { TagFilters } from "~/constants/filters";
 import { getAllTags } from "~/lib/actions/tag.actions";
+import { URLProps } from "~/types";
 
-const TagsPage = async () => {
-  const result = await getAllTags({});
+const TagsPage = async ({ searchParams }: URLProps) => {
+  const result = await getAllTags({ searchQuery: searchParams.q });
   return (
     <Fragment>
       <h1 className="h1-bold text-dark100_light900">All Tags</h1>
