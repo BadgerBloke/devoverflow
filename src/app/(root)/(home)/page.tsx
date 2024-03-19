@@ -2,6 +2,8 @@ import { Fragment } from "react";
 import { Metadata } from "next";
 import Link from "next/link";
 
+import { auth } from "@clerk/nextjs";
+
 import QuestionCard from "~/components/cards/question-card";
 import Filter from "~/components/shared/filter";
 import NoResult from "~/components/shared/no-result";
@@ -9,7 +11,10 @@ import Pagination from "~/components/shared/pagination";
 import LocalSearch from "~/components/shared/search/local-search";
 import { Button } from "~/components/ui/button";
 import { HomePageFilters } from "~/constants/filters";
-import { getQuestions } from "~/lib/actions/question.action";
+import {
+  getQuestions,
+  getRecommendedQuestions,
+} from "~/lib/actions/question.action";
 import { URLProps } from "~/types";
 
 import HomeFilter from "./components/home-filter";
@@ -21,11 +26,29 @@ export const metadata: Metadata = {
 };
 
 const Home = async ({ searchParams }: URLProps) => {
-  const { questions, isNext } = await getQuestions({
-    searchQuery: searchParams.q,
-    filter: searchParams.filter,
-    page: searchParams.page ? +searchParams.page : 1,
-  });
+  const { userId } = auth();
+
+  let result;
+  if (searchParams?.filter === "recommended") {
+    if (userId) {
+      result = await getRecommendedQuestions({
+        userId,
+        searchQuery: searchParams.q,
+        page: searchParams.page ? +searchParams.page : 1,
+      });
+    } else {
+      result = {
+        questions: [],
+        isNext: false,
+      };
+    }
+  } else {
+    result = await getQuestions({
+      searchQuery: searchParams.q,
+      filter: searchParams.filter,
+      page: searchParams.page ? +searchParams.page : 1,
+    });
+  }
 
   return (
     <Fragment>
@@ -53,8 +76,8 @@ const Home = async ({ searchParams }: URLProps) => {
       </div>
       <HomeFilter />
       <div className="mt-10 flex w-full flex-col gap-6">
-        {questions.length > 0 ? (
-          questions.map((question) => (
+        {result?.questions?.length ? (
+          result.questions.map((question) => (
             <QuestionCard
               key={question._id}
               _id={question._id}
@@ -81,7 +104,7 @@ const Home = async ({ searchParams }: URLProps) => {
       <div className="mt-10">
         <Pagination
           pageNumber={searchParams?.page ? +searchParams.page : 1}
-          isNext={isNext}
+          isNext={result.isNext}
         />
       </div>
     </Fragment>

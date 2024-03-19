@@ -95,7 +95,7 @@ const ProfileDetailsPage = async ({ params, searchParams }: Props) => {
               Answers
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="top-posts">
+          <TabsContent value="top-posts" className="mt-5 flex w-full flex-col">
             <QuestionTab
               userId={userInfo.user._id}
               clerkId={clerkId}
