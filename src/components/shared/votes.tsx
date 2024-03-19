@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { toast } from "sonner";
 
 import { downVoteAnswer, upVoteAnswer } from "~/lib/actions/answer.action";
 import { viewQuestion } from "~/lib/actions/interaction.action";
@@ -35,18 +36,26 @@ const Votes = ({
   hasSaved,
 }: Props) => {
   const pathname = usePathname();
-  const router = useRouter();
   const handleSave = async () => {
     await toggleSaveQuestion({
       questionId: JSON.parse(itemId),
       userId: JSON.parse(userId),
       path: pathname,
     });
+
+    if (hasSaved) {
+      toast.error("Question Removed from your collection");
+    } else {
+      toast.success("Question Saved in your collection");
+    }
   };
 
   const handleVote = async (action: "upVote" | "downVote") => {
     if (!userId) {
-      router.push("/sign-in");
+      toast.warning("Please log in", {
+        description: "You must be logged in to perform this action",
+      });
+      return;
     }
 
     switch (action) {
@@ -68,7 +77,11 @@ const Votes = ({
             path: pathname,
           });
         }
-        // TODO: show a toast
+        if (hasUpVoted) {
+          toast.error(`Up vote Removed`);
+        } else {
+          toast.success(`Up vote Successful`);
+        }
         break;
       }
       case "downVote": {
@@ -89,7 +102,12 @@ const Votes = ({
             path: pathname,
           });
         }
-        // TODO: show a toast
+
+        if (hasDownVoted) {
+          toast.success("Down vote Removed");
+        } else {
+          toast.error(`Down vote Successful`);
+        }
         break;
       }
       default:
