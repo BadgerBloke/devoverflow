@@ -6,6 +6,7 @@ import { getAnswers } from "~/lib/actions/answer.action";
 import { getTimestamp } from "~/lib/utils";
 
 import Filter from "./filter";
+import Pagination from "./pagination";
 import ParseHTML from "./parse-html";
 import Votes from "./votes";
 
@@ -24,7 +25,7 @@ const AllAnswers = async ({
   page,
   filter,
 }: Props) => {
-  const result = await getAnswers({
+  const { answers, isNext } = await getAnswers({
     questionId: JSON.parse(questionId),
     page: page ? +page : 1,
     sortBy: filter,
@@ -40,7 +41,7 @@ const AllAnswers = async ({
         <Filter filters={AnswerFilters} />
       </div>
       <div className="my-10 space-y-16">
-        {result.answers.map((answer) => (
+        {answers.map((answer) => (
           <article key={answer._id}>
             <div className="flex items-center justify-between">
               <div className="mb-8 flex w-full flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
@@ -85,6 +86,9 @@ const AllAnswers = async ({
             <ParseHTML data={answer.content} />
           </article>
         ))}
+      </div>
+      <div className="mt-10 w-full">
+        <Pagination pageNumber={page ? +page : 1} isNext={isNext} />
       </div>
     </div>
   );

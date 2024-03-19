@@ -7,6 +7,7 @@ import QuestionCard, {
 } from "~/components/cards/question-card";
 import Filter from "~/components/shared/filter";
 import NoResult from "~/components/shared/no-result";
+import Pagination from "~/components/shared/pagination";
 import LocalSearch from "~/components/shared/search/local-search";
 import { QuestionFilters } from "~/constants/filters";
 import { getSavedQuestions } from "~/lib/actions/user.action";
@@ -17,10 +18,11 @@ const Home = async ({ searchParams }: URLProps) => {
 
   if (!userId) return null;
 
-  const { questions } = await getSavedQuestions({
+  const { questions, isNext } = await getSavedQuestions({
     clerkId: userId,
     searchQuery: searchParams.q,
     filter: searchParams.filter,
+    page: searchParams.page ? +searchParams.page : 1,
   });
   return (
     <Fragment>
@@ -60,6 +62,12 @@ const Home = async ({ searchParams }: URLProps) => {
             linkTitle="Ask a Question"
           />
         )}
+      </div>
+      <div className="mt-10">
+        <Pagination
+          pageNumber={searchParams?.page ? +searchParams.page : 1}
+          isNext={isNext}
+        />
       </div>
     </Fragment>
   );
