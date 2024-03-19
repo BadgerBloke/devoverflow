@@ -34,6 +34,8 @@ export interface SearchParams {
   type?: string | null;
 }
 
+export type typeOfGlobalSearchType = "question" | "answer" | "user" | "tag";
+
 export interface RecommendedParams {
   userId: string;
   page?: number;
