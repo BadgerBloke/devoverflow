@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import { Metadata } from "next";
 import Link from "next/link";
 
 import QuestionCard from "~/components/cards/question-card";
@@ -12,6 +13,12 @@ import { getQuestions } from "~/lib/actions/question.action";
 import { URLProps } from "~/types";
 
 import HomeFilter from "./components/home-filter";
+
+export const metadata: Metadata = {
+  title: "Home | Question Overflow",
+  description:
+    "Question Overflow is a community of 1,000,000+ explorer. Join us.",
+};
 
 const Home = async ({ searchParams }: URLProps) => {
   const { questions, isNext } = await getQuestions({

@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import { Metadata } from "next";
 import Link from "next/link";
 
 import UserCard from "~/components/cards/user-card";
@@ -8,6 +9,10 @@ import LocalSearch from "~/components/shared/search/local-search";
 import { UserFilters } from "~/constants/filters";
 import { getAllUsers } from "~/lib/actions/user.action";
 import { URLProps } from "~/types";
+
+export const metadata: Metadata = {
+  title: "Community | Question Overflow",
+};
 
 const CommunityPage = async ({ searchParams }: URLProps) => {
   const { users, isNext } = await getAllUsers({
