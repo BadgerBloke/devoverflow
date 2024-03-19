@@ -4,6 +4,7 @@ import Link from "next/link";
 import QuestionCard from "~/components/cards/question-card";
 import Filter from "~/components/shared/filter";
 import NoResult from "~/components/shared/no-result";
+import Pagination from "~/components/shared/pagination";
 import LocalSearch from "~/components/shared/search/local-search";
 import { Button } from "~/components/ui/button";
 import { HomePageFilters } from "~/constants/filters";
@@ -13,9 +14,10 @@ import { URLProps } from "~/types";
 import HomeFilter from "./components/home-filter";
 
 const Home = async ({ searchParams }: URLProps) => {
-  const { questions } = await getQuestions({
+  const { questions, isNext } = await getQuestions({
     searchQuery: searchParams.q,
     filter: searchParams.filter,
+    page: searchParams.page ? +searchParams.page : 1,
   });
   return (
     <Fragment>
@@ -67,6 +69,12 @@ const Home = async ({ searchParams }: URLProps) => {
             linkTitle="Ask a Question"
           />
         )}
+      </div>
+      <div className="mt-10">
+        <Pagination
+          pageNumber={searchParams?.page ? +searchParams.page : 1}
+          isNext={isNext}
+        />
       </div>
     </Fragment>
   );
