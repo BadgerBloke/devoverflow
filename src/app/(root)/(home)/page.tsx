@@ -21,8 +21,8 @@ import HomeFilter from "./components/home-filter";
 
 export const metadata: Metadata = {
   title: "Home | Question Overflow",
-  description:
-    "Question Overflow is a community of 1,000,000+ explorer. Join us.",
+  // description:
+  //   "Question Overflow is a community of 1,000,000+ explorer. Join us.",
 };
 
 const Home = async ({ searchParams }: URLProps) => {
