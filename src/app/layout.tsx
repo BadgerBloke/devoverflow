@@ -8,6 +8,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 
 import { ClerkProvider } from "@clerk/nextjs";
 
+import { Toaster } from "~/components/ui/sonner";
 import ThemeProvider from "~/context/theme-provider";
 
 const inter = Inter({
@@ -47,6 +48,7 @@ export default function RootLayout({
             },
           }}
         >
+          <Toaster richColors position="top-right" />
           <ThemeProvider>{children}</ThemeProvider>
         </ClerkProvider>
       </body>

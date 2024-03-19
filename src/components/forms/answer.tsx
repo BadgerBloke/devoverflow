@@ -31,7 +31,7 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
   const { mode } = useTheme();
   const pathname = usePathname();
   const [isSubmitting, setSubmitting] = useState(false);
-  const [isSubmittingAi, setSubmittingAi] = useState(true);
+  const [isSubmittingAi, setSubmittingAi] = useState(false);
   const form = useForm<AnswerType>({
     resolver: zodResolver(AnswerSchema),
     defaultValues: {
@@ -103,6 +103,7 @@ const AnswerForm = ({ question, questionId, authorId }: Props) => {
         <Button
           className="btn light-border-2 gap-1.5 rounded-md px-4 py-2.5 text-primary-500 shadow-none dark:text-primary-500"
           onClick={generateAiAnswer}
+          disabled={isSubmittingAi}
         >
           <Image
             src="/assets/icons/stars.svg"
