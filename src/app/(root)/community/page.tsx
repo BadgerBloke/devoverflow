@@ -9,12 +9,17 @@ import { UserFilters } from "~/constants/filters";
 import { getAllUsers } from "~/lib/actions/user.action";
 import { URLProps } from "~/types";
 
+import Loading from "./loading";
+
 const CommunityPage = async ({ searchParams }: URLProps) => {
   const { users, isNext } = await getAllUsers({
     searchQuery: searchParams.q,
     filter: searchParams.filter,
     page: searchParams.page ? +searchParams.page : 1,
   });
+
+  const isLoading = true;
+  if (isLoading) return <Loading />;
   return (
     <Fragment>
       <h1 className="h1-bold text-dark100_light900">All Users</h1>
