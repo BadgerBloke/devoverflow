@@ -2,9 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 
+import { Reputations } from "~/constants/filters";
 import Answer from "~/database/answer.model";
 import Interaction from "~/database/interaction.model";
 import Question from "~/database/question.model";
+import User from "~/database/user.model";
 
 import { connectToDatabase } from "../mongoose";
 
@@ -22,11 +24,21 @@ export const createAnswer = async (params: CreateAnswerParams) => {
     const { content, path, author, question } = params;
     const newAnswer = await Answer.create({ content, author, question });
 
-    await Question.findByIdAndUpdate(question, {
+    const fetchedQuestion = await Question.findByIdAndUpdate(question, {
       $push: { answers: newAnswer._id },
     });
 
-    // TODO: add interaction....
+    await Interaction.create({
+      user: author,
+      action: Reputations.createAnswer.action,
+      question,
+      answer: newAnswer._id,
+      tags: fetchedQuestion.tags,
+    });
+
+    await User.findByIdAndUpdate(author, {
+      $inc: { reputation: Reputations.createAnswer.point },
+    });
     console.log("newAnswer: ", newAnswer);
     revalidatePath(path);
   } catch (error) {
@@ -105,7 +117,22 @@ export const upVoteAnswer = async (params: AnswerVoteParams) => {
 
     if (!answer) throw new Error("Question not found");
 
-    // Increment author's reputation
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        reputation: hasUpVoted
+          ? -Reputations.answerUpVoterUser.point
+          : Reputations.answerUpVoterUser.point,
+      },
+    });
+
+    await User.findByIdAndUpdate(answer.author, {
+      $inc: {
+        reputation: hasUpVoted
+          ? -Reputations.answerUpVotedFor.point
+          : Reputations.answerUpVotedFor.point,
+      },
+    });
+
     revalidatePath(path);
   } catch (error) {
     console.log("Error: ", error);
@@ -137,7 +164,21 @@ export const downVoteAnswer = async (params: AnswerVoteParams) => {
 
     if (!answer) throw new Error("Question not found");
 
-    // Increment author's reputation
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        reputation: hasDownVoted
+          ? -Reputations.answerUpVoterUser.point
+          : Reputations.answerUpVoterUser.point,
+      },
+    });
+
+    await User.findByIdAndUpdate(answer.author, {
+      $inc: {
+        reputation: hasDownVoted
+          ? -Reputations.answerUpVotedFor.point
+          : Reputations.answerUpVotedFor.point,
+      },
+    });
     revalidatePath(path);
   } catch (error) {
     console.log("Error: ", error);

@@ -39,7 +39,7 @@ export const globalSearch = async (params: SearchParams) => {
           ...queryResults.map((item) => ({
             title:
               type === "answer"
-                ? `Answers containing ${query}`
+                ? `Answers containing: ${query}`
                 : item[searchField],
             type,
             id:

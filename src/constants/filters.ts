@@ -39,3 +39,26 @@ export const GlobalSearchFilters = [
   { name: "User", value: "user" },
   { name: "Tag", value: "tag" },
 ];
+
+export const Reputations = {
+  askQuestion: {
+    action: "ask_question",
+    point: 5,
+  },
+  createAnswer: {
+    action: "answer",
+    point: 10,
+  },
+  questionUpVoterUser: {
+    point: 2,
+  },
+  questionUpVotedFor: {
+    point: 10,
+  },
+  answerUpVoterUser: {
+    point: 2,
+  },
+  answerUpVotedFor: {
+    point: 10,
+  },
+};

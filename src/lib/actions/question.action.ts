@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { FilterQuery } from "mongoose";
 
+import { Reputations } from "~/constants/filters";
 import Answer from "~/database/answer.model";
 import Interaction from "~/database/interaction.model";
 import Question, { IQuestion } from "~/database/question.model";
@@ -45,6 +46,17 @@ export const createQuestion = async (params: CreateQuestionParams) => {
 
     await Question.findByIdAndUpdate(question._id, {
       $push: { tags: { $each: tagDocuments } },
+    });
+
+    await Interaction.create({
+      user: author,
+      action: Reputations.askQuestion.action,
+      question: question._id,
+      tags: tagDocuments,
+    });
+
+    await User.findByIdAndUpdate(author, {
+      $inc: { reputation: Reputations.askQuestion.point },
     });
 
     revalidatePath(path);
@@ -146,7 +158,22 @@ export const upVoteQuestion = async (params: QuestionVoteParams) => {
 
     if (!question) throw new Error("Question not found");
 
-    // Increment author's reputation
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        reputation: hasUpVoted
+          ? -Reputations.questionUpVoterUser.point
+          : Reputations.questionUpVoterUser.point,
+      },
+    });
+
+    await User.findByIdAndUpdate(question.author, {
+      $inc: {
+        reputation: hasUpVoted
+          ? -Reputations.questionUpVotedFor.point
+          : Reputations.questionUpVotedFor.point,
+      },
+    });
+
     revalidatePath(path);
   } catch (error) {
     console.log("Error: ", error);
@@ -178,7 +205,22 @@ export const downVoteQuestion = async (params: QuestionVoteParams) => {
 
     if (!question) throw new Error("Question not found");
 
-    // Increment author's reputation
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        reputation: hasDownVoted
+          ? -Reputations.questionUpVoterUser.point
+          : Reputations.questionUpVoterUser.point,
+      },
+    });
+
+    await User.findByIdAndUpdate(question.author, {
+      $inc: {
+        reputation: hasDownVoted
+          ? -Reputations.questionUpVotedFor.point
+          : Reputations.questionUpVotedFor.point,
+      },
+    });
+
     revalidatePath(path);
   } catch (error) {
     console.log("Error: ", error);
