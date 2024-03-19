@@ -53,7 +53,9 @@ export const getAllTags = async (params: GetAllTagsParams) => {
   try {
     connectToDatabase();
 
-    const { searchQuery, filter } = params;
+    const { searchQuery, filter, page = 1, pageSize = 20 } = params;
+
+    const skipAmount = (page - 1) * pageSize;
 
     const query: FilterQuery<ITag> = {};
     if (searchQuery) {
@@ -79,8 +81,15 @@ export const getAllTags = async (params: GetAllTagsParams) => {
         break;
     }
 
-    const tags = await Tag.find(query).sort(sortOptions);
-    return { tags };
+    const tags = await Tag.find(query)
+      .sort(sortOptions)
+      .skip(skipAmount)
+      .limit(pageSize);
+    const totalTags = await Tag.countDocuments();
+
+    const isNext = totalTags > skipAmount + tags.length;
+
+    return { tags, isNext };
   } catch (error) {
     console.log("Error: ", error);
     throw error;
@@ -93,11 +102,9 @@ export const getQuestionsByTagId = async (
   try {
     connectToDatabase();
 
-    const {
-      tagId,
-      //  page = 1, pageSize = 10,
-      searchQuery,
-    } = params;
+    const { tagId, page = 1, pageSize = 10, searchQuery } = params;
+
+    const skipAmount = (page - 1) * pageSize;
 
     const tagFilters: FilterQuery<ITag> = { _id: tagId };
 
@@ -109,6 +116,8 @@ export const getQuestionsByTagId = async (
         : {},
       options: {
         sort: { createdAt: -1 },
+        skip: skipAmount,
+        limit: pageSize,
       },
       populate: [
         { path: "tags", model: Tag, select: "_id name" },
@@ -118,7 +127,20 @@ export const getQuestionsByTagId = async (
 
     if (!tag) throw new Error("User not found");
 
-    return { tagTitle: tag.name, questions: tag.questions };
+    const currentTagTotalQuestion = await Tag.findOne(tagFilters).populate({
+      path: "questions",
+      model: Question,
+      match: searchQuery
+        ? { title: { $regex: searchQuery, $options: "i" } }
+        : {},
+      select: "_id",
+    });
+
+    const isNext =
+      currentTagTotalQuestion.questions.length >
+      skipAmount + tag.questions.length;
+
+    return { tagTitle: tag.name, questions: tag.questions, isNext };
   } catch (error) {
     console.log("Error: ", error);
     throw error;
