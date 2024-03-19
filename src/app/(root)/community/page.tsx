@@ -15,6 +15,7 @@ const CommunityPage = async ({ searchParams }: URLProps) => {
     filter: searchParams.filter,
     page: searchParams.page ? +searchParams.page : 1,
   });
+
   return (
     <Fragment>
       <h1 className="h1-bold text-dark100_light900">All Users</h1>
